@@ -1,0 +1,4 @@
+aws_region   = "ap-southeast-1"
+key_name     = "bakery-key"
+docker_image = "your_dockerhub_username/bakery-shop:latest"
+my_ip        = "203.0.113.45/32"   # Replace with your actual public IP

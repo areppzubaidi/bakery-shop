@@ -1,0 +1,32 @@
+name: Ansible Pipeline - Configure Instances
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [terraform-applied]
+
+jobs:
+  ansible:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Ansible
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible boto3 botocore
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Get S3 bucket from Terraform output
+        run: |
+          cd terraform
+          echo "S3_BUCKET=$(terraform output -raw s3_backup_bucket)" >> $GITHUB_ENV
+      - name: Run Ansible playbook
+        env:
+          DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/bakery-shop:latest
+          S3_BACKUP_BUCKET: ${{ env.S3_BUCKET }}
+        run: |
+          cd ansible
+          ansible-playbook -i inventory/aws_ec2.yml playbooks/deploy.yml

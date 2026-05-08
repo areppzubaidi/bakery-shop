@@ -1,0 +1,16 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+
+# Ansible
+*.retry
+.ansible/
+
+# Docker
+*.log
+
+# OS
+.DS_Store
